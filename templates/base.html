@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'base.css' %}">
+    <script type="application/javascript" src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <script type="application/javascript" src="{% static 'jquery-3.3.7.min.js' %}"></script>
+    <script type="text/javascript" src="{% static "ckeditor/ckeditor-init.js" %}"></script>
+    <script type="text/javascript" src="{% static "ckeditor/ckeditor/ckeditor.js" %}"></script>
+    {% block head_extends %}{% endblock %}
+    <style type="text/css">
+        .sidebar {
+            background-color: #b2bec3;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+{# 导航栏 #}
+<div class="navbar navbar-default" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand">python学习系统</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li><a href="{% url "webindex" %}">首页</a></li>
+            <li><a href="{% url "course_list" %}">课程中心</a></li>
+            {#            <li><a href="">个人中心</a></li>#}
+            <li><a href="{% url "jupyter" %}">在线代码编写</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li><a>欢迎你，{{ user.first_name }}</a></li>
+            <li><a href="{% url "logout" %}">退出</a></li>
+        </ul>
+    </div>
+</div>
+
+
+<div class="container-fluid">
+    <div class="row">
+        {# 侧边栏 #}
+        <div class="col-md-2">
+            <ul class="nav nav-pills nav-stacked">
+                {% block side_bar %}{% endblock %}
+            </ul>
+        </div>
+        {# 详细内容 #}
+        <div class="col-md-10">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+</div>
+{% block script_extends %}{% endblock %}
+</body>
+</html>

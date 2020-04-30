@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load static %}
+{% load has_group %}
+
+{#页面标题#}
+{% block title %}
+    {{ course.course_name }}
+{% endblock %}
+
+{% block side_bar %}
+    <ul class="list-group">
+        {#        判定为学生时加载签到模块#}
+        {% if request.user|has_group:"student" %}
+            {% if signInBool == 0 %}
+                <a href="{% url "signIn" course.id %}" class="list-group-item active text-center ">课程签到</a>
+                {#            <a class="list-group-item active text-center " id="ajaxSignIn">课程签到</a>#}
+            {% else %}
+                <a class="list-group-item active text-center disabled">你已签到</a>
+            {% endif %}
+        {% endif %}
+
+        {% for chapter in chapters %}
+            <a href="{% url "course_chapter" course.id chapter.chapter %}"
+               class="list-group-item text-center">课时{{ chapter.chapter }}</a>
+        {% endfor %}
+        {% if request.user|has_group:"teacher" %}
+            <a href="{% url "course_chapter_add" course.id %}" class="list-group-item active text-center">添加章节</a>
+        {% endif %}
+    </ul>
+{% endblock %}
+
+{#页面内容#}
+{% block content %}
+    {% if thisChapter.content_type == "text" %}
+        {{ thisChapter.content|safe }}
+    {% endif %}
+
+    {#评论功能#}
+    <div class="col-md-12">
+        <div class="comment-area">
+            <h3 class="comment-area-title">提交评论</h3>
+            <form id="comment_form" action="{% url "update_comment" %}" method="post" style="overflow: hidden">
+                {% csrf_token %}
+                <label>{{ user.first_name }},欢迎评论</label>
+                {% for field in comment_form %}
+                    {{ field }}
+                {% endfor %}
+                <div>
+                    <input class="btn btn-primary" type="submit" value="提交评论">
+                </div>
+            </form>
+            <h3 class="comment-area-title">评论列表</h3>
+            {% for comment in comments %}
+                {{ comment.user.first_name }}
+                ({{ comment.comment_time|date:"Y-m-d H:i:s" }}):
+                {{ comment.text|safe }}
+                <br>
+            {% empty %}
+                暂无评论
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

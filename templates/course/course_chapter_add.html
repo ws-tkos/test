@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static %}
+{% load has_group %}
+
+{#页面标题#}
+{% block title %}
+    {{ course.course_name }}
+{% endblock %}
+
+{% block side_bar %}
+    <ul class="list-group">
+        {% for chapter in chapters %}
+            <a href="{% url "course_chapter" course.id chapter.chapter %}"
+               class="list-group-item text-center">课时{{ chapter.chapter }}</a>
+        {% endfor %}
+        <a href="#" class="list-group-item active text-center">添加章节</a>
+    </ul>
+{% endblock %}
+
+{#页面内容#}
+{% block content %}
+    <div class="col-md-12">
+        <div class="comment-area">
+            <h3 class="comment-area-title">添加章节</h3>
+            <form id="comment_form" action="{% url "update_chapter" %}" method="post" style="overflow: hidden">
+                {% csrf_token %}
+                {% for field in comment_form %}
+                    {{ field }}
+                {% endfor %}
+                <div>
+                    <input class="btn btn-primary" type="submit" value="提交章节信息">
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

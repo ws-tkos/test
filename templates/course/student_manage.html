@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load has_group %}
+{% load static %}
+
+{% block user_name %}
+    {{ user }}
+{% endblock %}
+
+{#页面标题#}
+{% block title %}
+    {{ user.first_name }}的主页
+{% endblock %}
+
+{#侧边栏#}
+{#<li role="presentation"><a href=""></a></li>#}
+{% block side_bar %}
+    {% if request.user|has_group:"student" %}
+        <li role="presentation"><a href="{% url "course_manage" %}">课程管理</a></li>
+        {#        <li role="presentation"><a href="">信息中心</a></li>#}
+    {% endif %}
+    {% if request.user|has_group:"teacher" %}
+        <li role="presentation"><a href="{% url "course_manage" %}">课程管理</a></li>
+        <li role="presentation"><a href="{% url "student_manage" %}">打卡情况</a></li>
+        {#        <li role="presentation"><a href="">信息中心</a></li>#}
+    {% endif %}
+{% endblock %}
+
+{#页面内容#}
+{% block content %}
+
+    {#    <div class="col-md-12">#}
+    {#        {% for course in courses %}#}
+    {#            <div class="list-group col-md-4">#}
+    {#                <a class="list-group-item active">{{ course.course_name }}</a>#}
+    {#                {% if course.course_name == "python入门" %}#}
+    {#                    {% for users in users1 %}#}
+    {#                        <a class="list-group-item"><span class="badge">#}
+    {#                        未打卡#}
+    {#                    </span>{{ users.first_name }}</a>#}
+    {#                    {% endfor %}#}
+    {#                {% endif %}#}
+    {##}
+    {#                {% if course.course_name == "python进阶" %}#}
+    {#                    {% for users in users2 %}#}
+    {#                        <a class="list-group-item"><span class="badge">#}
+    {#                        未打卡#}
+    {#                    </span>{{ users.first_name }}</a>#}
+    {#                    {% endfor %}#}
+    {#                {% endif %}#}
+    {#            </div>#}
+    {#        {% endfor %}#}
+    {#    </div>#}
+
+    <div class="col-md-12">
+        {% for course in courses %}
+            {% if request.user|has_group:course.id %}
+{#                判断该老师是否教导这个课程#}
+                <div class="list-group col-md-4">
+                    <a class="list-group-item active" style="display: block; text-align: center;">{{ course.course_name }}</a>
+                    {% for user_sign in signIn %}
+                        {% if user_sign.courseId == course.id %}
+{#                            判断签到记录是否为当前课程#}
+                            <a class="list-group-item" style="display: block; text-align: center;">{{ user_sign.student_name }}</a>
+                        {% endif %}
+                    {% endfor %}
+                <a class="list-group-item list-group-item-info" style="display: block; text-align: center;" >以上为所有签到成员</a>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+
+{% endblock %}

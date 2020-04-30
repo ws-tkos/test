@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load has_group %}
+{% load static %}
+
+{% block user_name %}
+    {{ user }}
+{% endblock %}
+
+{#页面标题#}
+{% block title %}
+    {{ user.first_name }}的课程管理
+{% endblock %}
+
+{#侧边栏#}
+{#<li role="presentation"><a href=""></a></li>#}
+{% block side_bar %}
+    {% if request.user|has_group:"student" %}
+        <li role="presentation"><a href="{% url "course_manage" %}">课程管理</a></li>
+        {#        <li role="presentation"><a href="">信息中心</a></li>#}
+    {% endif %}
+    {% if request.user|has_group:"teacher" %}
+        <li role="presentation"><a href="{% url "course_manage" %}">课程管理</a></li>
+        <li role="presentation"><a href="{% url "student_manage" %}">打卡情况</a></li>
+        {#        <li role="presentation"><a href="">信息中心</a></li>#}
+    {% endif %}
+{% endblock %}
+
+{#页面内容#}
+{% block content %}
+    {% if request.user|has_group:"student" %}
+        <div class="row">{# 已选课程显示 #}
+            {% for course  in courses %}
+                {% if request.user|has_group:course.id %}{# 判断是否在课程内 #}
+                    <div class="well well-lg col-md-12">
+                        <h3>
+                            <p class="col-md-12">{{ course.course_name }}
+                                <span class="label label-default">{% if course.course_state == 1 %}
+                                    已开课
+                                {% elif course.course_state == 0 %}未开课{% endif %}</span>
+                                <a href="{% url "courseRemove" course.id %}" class="btn btn-default"
+                                   style="float: right;" role="button">退选</a>
+                                <a href="{% url "course_chapter" course.id 1 %}" class="btn btn-primary"
+                                   style="float: right;" role="button">进入课程</a>
+                            </p>
+                        </h3>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% if request.user|has_group:"teacher" %}
+        <div class="row">{# 已选课程显示 #}
+            {% for course  in courses %}
+                {% if request.user|has_group:course.id %}{# 判断是否在课程内 #}
+                    <div class="well well-lg col-md-12">
+                        <h3>
+                            <p class="col-md-12">{{ course.course_name }}
+                                <span class="label label-default">{% if course.course_state == 1 %}
+                                    已开课
+                                {% elif course.course_state == 0 %}未开课{% endif %}</span>
+                                {% if course.course_state == 1 %}
+                                    <a href="{% url "courseStop" course.id %}" class="btn btn-default"
+                                   style="float: right;" role="button">暂停课程</a>
+                                {% elif course.course_state == 0 %}
+                                    <a href="{% url "courseOpen" course.id %}" class="btn btn-default"
+                                   style="float: right;" role="button">开启课程</a>
+                                {% endif %}
+                                <a href="{% url "course_chapter" course.id 1 %}" class="btn btn-primary"
+                                   style="float: right;" role="button">进入课程</a>
+                            </p>
+                        </h3>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

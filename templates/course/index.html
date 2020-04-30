@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load has_group %}
+{% load static %}
+
+{% block user_name %}
+    {{ user }}
+{% endblock %}
+
+{#页面标题#}
+{% block title %}
+    {{ user.first_name }}的主页
+{% endblock %}
+
+{#侧边栏#}
+{#<li role="presentation"><a href=""></a></li>#}
+{% block side_bar %}
+    {% if request.user|has_group:"student" %}
+        <li role="presentation"><a href="{% url "course_manage" %}">课程管理</a></li>
+{#        <li role="presentation"><a href="">信息中心</a></li>#}
+    {% endif %}
+    {% if request.user|has_group:"teacher" %}
+        <li role="presentation"><a href="{% url "course_manage" %}">课程管理</a></li>
+        <li role="presentation"><a href="{% url "student_manage" %}">打卡情况</a></li>
+{#        <li role="presentation"><a href="">信息中心</a></li>#}
+    {% endif %}
+{% endblock %}
+
+{#页面内容#}
+{% block content %}
+{#    学生部分#}
+    {% if request.user|has_group:"student" %}
+        <div class="row">{# 已选课程显示 #}
+            {% for course  in courses %}
+                {% if request.user|has_group:course.id %}{# 判断是否在课程内 #}
+                    <div class="col-md-10 col-md-4">
+                        <div class="thumbnail">
+                            <img src="{% static "image/course_title" %}/{{ course.id }}.png" alt="...">
+                            <div class="caption">
+                                <h3>{{ course.course_name }}
+                                    <small>
+                                        {% if course.course_state == 1 %}课程进行中{% endif %}
+                                        {% if course.course_state == 0 %}等待开课{% endif %}
+                                    </small>
+                                </h3>
+                                <p>{{ course.course_content|truncatechars_html:22 }}...</p>
+                                <p><a href="{% url "course_chapter" course.id 1 %}" class="btn btn-primary col-md-offset-5"
+                                      role="button">进入课程</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+{#    教师部分#}
+    {% if request.user|has_group:"teacher" %}
+        <div class="row">{# 已选课程显示 #}
+            {% for course  in courses %}
+                {% if request.user|has_group:course.id %}{# 判断是否在课程内 #}
+                    <div class="col-md-10 col-md-4">
+                        <div class="thumbnail">
+                            <img src="{% static "image/course_title" %}/{{ course.id }}.png" alt="...">
+                            <div class="caption">
+                                <h3>{{ course.course_name }}
+                                    <small>
+                                        {% if course.course_state == 1 %}课程进行中{% endif %}
+                                        {% if course.course_state == 0 %}等待开课{% endif %}
+                                    </small>
+                                </h3>
+                                <p>{{ course.course_content|truncatechars_html:22 }}...</p>
+                                <p><a href="{% url "course_chapter" course.id 1 %}" class="btn btn-primary col-md-offset-5"
+                                      role="button">查看课程</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
